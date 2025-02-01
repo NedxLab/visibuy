@@ -1,5 +1,8 @@
 import { styled } from "@mui/system";
 import { Button, Typography, Box } from "@mui/material";
+import { useActions } from "../../store/custom-hooks/hooks";
+import { useState } from "react";
+import ProductDetailsModal from "./productDetails";
 
 // Styled components
 const ProductCard = styled(Box)({
@@ -59,81 +62,99 @@ const CustomButton = styled(Button)({
 });
 
 const ProductCardComponent = ({ product }: any) => {
-  return (
-    <ProductCard>
-      <LogoCart>
-        <img
-          src="https://visibuy.com.ng/VisiBuy%20-%20Black.png"
-          alt="visibuy"
-          style={{ width: "40px", objectFit: "cover" }}
-        />
-      </LogoCart>
-      <MainImages>
-        <img src={product.image} alt="logo" width={150} />
-      </MainImages>
+  //   update redux store with products
+  const { setOrders } = useActions();
 
-      <ProductDetails>
-        <Typography
-          variant="h6"
+  // open modal
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <ProductCard onClick={() => setOpen(true)}>
+        <LogoCart>
+          <img
+            src="https://visibuy.com.ng/VisiBuy%20-%20Black.png"
+            alt="visibuy"
+            style={{ width: "40px", objectFit: "cover" }}
+          />
+        </LogoCart>
+        <MainImages>
+          <img src={product.image} alt="logo" width={150} />
+        </MainImages>
+
+        <ProductDetails>
+          <Typography
+            variant="h6"
+            sx={{
+              fontWeight: 900,
+              color: "black",
+              fontFamily: "cursive",
+              fontSize: "1.2rem",
+            }}
+          >
+            {product.title.slice(0, 30)}
+          </Typography>
+          <Typography
+            variant="body2"
+            sx={{
+              margin: "0",
+              fontFamily: "Work Sans",
+              fontWeight: "500",
+              fontSize: "0.8rem",
+              color: "black",
+              textAlign: "justify",
+              padding: "1rem",
+            }}
+          >
+            {product.description.slice(0, 150)}...
+          </Typography>
+        </ProductDetails>
+        <Price>
+          <Typography
+            sx={{
+              fontSize: "25px",
+              fontWeight: 600,
+              color: "black",
+              fontFamily: "cursive",
+            }}
+          >
+            ${product.price}
+          </Typography>
+          <Typography
+            sx={{
+              fontSize: "10px",
+              fontWeight: 600,
+              marginTop: "-4px",
+              color: "#707070",
+            }}
+          >
+            {product.price_description}
+          </Typography>
+        </Price>
+        <Box
           sx={{
-            fontWeight: 900,
-            color: "black",
-            fontFamily: "cursive",
-            fontSize: "1.2rem",
+            position: "relative",
+            height: "50px",
+            width: "100%",
+            borderRadius: "25px",
+            marginTop: "30px",
+            overflow: "hidden",
           }}
         >
-          {product.title.slice(0, 30)}
-        </Typography>
-        <Typography
-          variant="body2"
-          sx={{
-            margin: "0",
-            fontFamily: "Work Sans",
-            fontWeight: "500",
-            fontSize: "0.8rem",
-            color: "black",
-            textAlign: "justify",
-            padding: "1rem",
-          }}
-        >
-          {product.description.slice(0, 150)}...
-        </Typography>
-      </ProductDetails>
-      <Price>
-        <Typography
-          sx={{
-            fontSize: "25px",
-            fontWeight: 600,
-            color: "black",
-            fontFamily: "cursive",
-          }}
-        >
-          ${product.price}
-        </Typography>
-        <Typography
-          sx={{
-            fontSize: "10px",
-            fontWeight: 600,
-            marginTop: "-4px",
-            color: "#707070",
-          }}
-        >
-          {product.price_description}
-        </Typography>
-      </Price>
-      <Box
-        sx={{
-          position: "relative",
-          height: "50px",
-          width: "100%",
-          borderRadius: "25px",
-          marginTop: "30px",
-          overflow: "hidden",
-        }}
-      >
-        <CustomButton>Add To Cart</CustomButton>
-      </Box>
-    </ProductCard>
+          <CustomButton
+            onClick={() => {
+              setOrders(product);
+            }}
+          >
+            Add To Cart
+          </CustomButton>
+        </Box>
+      </ProductCard>{" "}
+      <ProductDetailsModal
+        product={product}
+        open={open}
+        handleClose={() => setOpen(false)}
+      />
+    </>
   );
 };
 
