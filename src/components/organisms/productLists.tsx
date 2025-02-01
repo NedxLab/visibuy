@@ -1,18 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useFetchProducts } from "../../hooks/useFetchProducts";
 import {
   Typography,
   TextField,
   MenuItem,
-  Skeleton,
   Select,
   FormControl,
   Container,
   styled,
   Box,
+  CircularProgress,
 } from "@mui/material";
 import ProductCardComponent from "./productCard";
 import Grid from "@mui/material/Grid2";
+import { useActions, useAppSelector } from "../../store/custom-hooks/hooks";
 
 const CustomTextField = styled(TextField)({
   width: "10rem",
@@ -83,7 +84,16 @@ const categories = [
 ];
 
 const ProductList: React.FC = () => {
+  // get sorted products from store
+  const finalProducts = useAppSelector((state) => state.products);
+
+  //   update redux store with products
+  const { setSortedProducts } = useActions();
+
+  //  fetch products from api
   const { products, loading, error } = useFetchProducts();
+
+  //   set initial state for filters
   const [category, setCategory] = useState<string>("All");
   const [priceFilter, setPriceFilter] = useState<string>("lowToHigh");
   const [minPrice, setMinPrice] = useState<number>(0);
@@ -99,15 +109,22 @@ const ProductList: React.FC = () => {
   });
 
   // Sort the filtered products based on the price filter
-  const sortedProducts = filteredProducts.sort((a, b) => {
+  const sortedProducts = [...filteredProducts].sort((a, b) => {
     if (priceFilter === "lowToHigh") {
       return a.price - b.price;
     } else if (priceFilter === "highToLow") {
       return b.price - a.price;
     } else {
-      return 0; // 'Recommended' is handled differently, no sorting based on price.
+      return 0; // 'Recommended' does not sort by price.
     }
   });
+
+  //   update redux store with sorted products
+  useEffect(() => {
+    if (JSON.stringify(sortedProducts) === JSON.stringify(finalProducts))
+      return;
+    setSortedProducts(sortedProducts);
+  }, [JSON.stringify(sortedProducts)]);
 
   return (
     <ProductWrapper>
@@ -172,48 +189,11 @@ const ProductList: React.FC = () => {
       {/* Product Grid */}
       <Grid container spacing={3} alignItems="center" justifyContent={"center"}>
         {loading ? (
-          // Skeleton Loaders
-          <>
-            <Grid container spacing={1}>
-              <Grid size={5} />
-              <Grid size={12}>
-                <Skeleton height={14} />
-              </Grid>
-              <Grid size={12}>
-                <Skeleton height={14} />
-              </Grid>
-              <Grid size={4}>
-                <Skeleton height={100} />
-              </Grid>
-              <Grid size={8}>
-                <Skeleton height={100} />
-              </Grid>
-
-              <Grid size={12}>
-                <Skeleton height={150} />
-              </Grid>
-              <Grid size={12}>
-                <Skeleton height={14} />
-              </Grid>
-
-              <Grid size={3}>
-                <Skeleton height={100} />
-              </Grid>
-              <Grid size={3}>
-                <Skeleton height={100} />
-              </Grid>
-              <Grid size={3}>
-                <Skeleton height={100} />
-              </Grid>
-              <Grid size={3}>
-                <Skeleton height={100} />
-              </Grid>
-            </Grid>
-          </>
+          <CircularProgress />
         ) : error ? (
           <Typography color="error">{error}</Typography>
         ) : (
-          sortedProducts.map((product) => (
+          finalProducts.map((product) => (
             <ProductCardComponent key={product.id} product={product} />
           ))
         )}
