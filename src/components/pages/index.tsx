@@ -1,5 +1,6 @@
 import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
+import Dashboard from "./dashboard";
+import Orders from "./orders";
 export default function PageContent({ pathname }: { pathname: string }) {
   return (
     <Box
@@ -11,7 +12,7 @@ export default function PageContent({ pathname }: { pathname: string }) {
         textAlign: "center",
       }}
     >
-      <Typography>Dashboard content for {pathname}</Typography>
+      {pathname.startsWith("/orders") ? <Orders /> : <Dashboard />}
     </Box>
   );
 }
