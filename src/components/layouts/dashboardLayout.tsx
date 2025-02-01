@@ -32,7 +32,7 @@ const NAVIGATION: Navigation = [
 export default function DashboardLayout({
   children,
 }: Readonly<{ children: (router: Router) => React.ReactNode }>) {
-  const router = useDemoRouter("/orders");
+  const router = useDemoRouter("/dashboard");
   return (
     <AppProvider
       navigation={NAVIGATION}
