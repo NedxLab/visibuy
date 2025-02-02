@@ -8,7 +8,8 @@ const productSlice = createSlice({
   initialState,
   reducers: {
     setSortedProducts: (state, { payload }: PayloadAction<IProduct[]>) => {
-      return payload;
+      state.length = 0;
+      state.push(...payload);
     },
   },
 });
